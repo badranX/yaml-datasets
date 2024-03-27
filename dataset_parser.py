@@ -1,4 +1,5 @@
 from itertools import chain
+import yaml
 
 def parse(entry):
     if not entry:
@@ -18,12 +19,27 @@ def parse_feature_names_if_exist(entry):
     print('FEATURES: ', keys)
 
 def parser(lines):
+    lines = iter(lines)
+    #parse meta
+    metadata = ""
+    for line in lines:
+        if not line.strip():
+            continue
+        if line.startswith('dataset'):
+            break
+        metadata += line + '\n'
+    metadata = yaml.safe_load(metadata) 
+    print('meta -- ' , metadata)
+    
+    #DONE meta
+
+
+    #read meta data
     tab = None
     dim = None
     feature_names = None
     entry = []
     
-    #read meta data
     tmp = []
     for line in lines:
         tmp.append(line)
@@ -41,7 +57,7 @@ def parser(lines):
 
     lines = chain(tmp, lines)
 
-    #start parse
+    #start dataset
     for line in lines:
         if not line.strip():
             continue
@@ -54,6 +70,9 @@ def parser(lines):
 
 if __name__ == '__main__':
     test = """
+key: meta_val
+dataset:
+
    -  key: val1
       key: val2
    -  - testy
