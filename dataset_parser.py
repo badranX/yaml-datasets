@@ -1,4 +1,8 @@
+from itertools import chain
+
 def parse(entry):
+    if not entry:
+        return None
     islist = entry[0].strip()[0] == '-'
     entry = map(lambda x: x.strip(), entry)
     entry = [line[2 if islist else line.find(':') + 1:].strip() 
@@ -15,20 +19,34 @@ def parse_feature_names_if_exist(entry):
 
 def parser(lines):
     tab = None
-    is_first_entry = True
+    dim = None
     feature_names = None
     entry = []
+    
+    #read meta data
+    tmp = []
     for line in lines:
+        tmp.append(line)
         if not line.strip():
             continue
         if not tab:
             tab = line.find('-')
-        
         elif line[tab] == '-':
+            feature_names = parse_feature_names_if_exist(entry)
+            dim = len(entry)
+            entry = []
+            break
+        entry.append(line[tab+2:])
+    #done read meta
+
+    lines = chain(tmp, lines)
+
+    #start parse
+    for line in lines:
+        if not line.strip():
+            continue
+        if line[tab] == '-':
             parse(entry)
-            if is_first_entry:
-                feature_names = parse_feature_names_if_exist(entry)
-                is_first_entry = False
             entry = []
         entry.append(line[tab+2:])
             
