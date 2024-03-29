@@ -2,13 +2,11 @@ from itertools import chain
 import yaml
 
 def parse(entry):
-    if not entry:
-        return None
     islist = entry[0].strip()[0] == '-'
-    entry = map(lambda x: x.strip(), entry)
     entry = [line[2 if islist else line.find(':') + 1:].strip() 
              for line in entry]
-    print(entry)
+    return entry
+
     
 def parse_feature_names_if_exist(entry):
     islist = entry[0].strip()[0] == '-'
@@ -16,68 +14,96 @@ def parse_feature_names_if_exist(entry):
         return None
     keys = [line[:line.find(':')].strip() 
              for line in entry]
-    print('FEATURES: ', keys)
+    return keys
 
-def parser(lines):
+
+def parse_meta(lines):
     lines = iter(lines)
     #parse meta
     metadata = ""
+    first = True
     for line in lines:
         if not line.strip():
             continue
+        if first and line.lstrip().startswith('-'):
+            return None
+        first = False
         if line.startswith('dataset'):
             break
         metadata += line + '\n'
     metadata = yaml.safe_load(metadata) 
-    print('meta -- ' , metadata)
+    return metadata
+
+
+def _process_dataset_line(line, tab=0, front = None):
+    line =  line[tab + 2:].strip()  #remove first '- '
+    if line[:2] == '- ': #check second '- ' 
+        return line[2:], None, False
+    else:
+        split = line.split(':', 1)
+        return split[0], split[1], True
     
-    #DONE meta
 
+def _get_feature_names_and_indent(lines):
+    lines = iter(lines)
+    tmp = _skip_to_dataset(lines)
+    lines = chain(tmp, lines)
 
-    #read meta data
-    tab = None
-    dim = None
+    indent_idx = None
     feature_names = None
     entry = []
-    
-    tmp = []
     for line in lines:
-        tmp.append(line)
-        if not line.strip():
-            continue
-        if not tab:
-            tab = line.find('-')
-        elif line[tab] == '-':
-            feature_names = parse_feature_names_if_exist(entry)
-            dim = len(entry)
-            entry = []
-            break
-        entry.append(line[tab+2:])
-    #done read meta
+        if line.strip():
+            if not indent_idx:
+                indent_idx = line.find('-')
+            elif line[indent_idx] == '-':
+                feature_names = parse_feature_names_if_exist(entry)
+                entry = []
+                break
+            if not entry and line[indent_idx+1:].lstrip().startswith('-'):
+                #first char
+                return None
+            entry.append(line[indent_idx+2:])
+    return feature_names, indent_idx
 
+def _skip_to_dataset(lines):
+    #skip meta data if any
+    tmp = []
+    is_first = True
+    for line in lines:
+        strp_line = line.strip()
+        if strp_line:
+            if is_first and strp_line.startswith('-'):
+                tmp.append(line)
+            is_first = False
+        else:
+           continue 
+        if strp_line.startswith('dataset'):
+            break
+    return tmp
+    #DONE meta
+        
+def parse_dataset(lines):
+    feature_names, tab = _get_feature_names_and_indent(lines)
+
+    lines = iter(lines)
+    tmp = _skip_to_dataset(lines)
     lines = chain(tmp, lines)
+
+    entry = []
+    #read first line to avoid extra is_first checks
+    for line in lines:
+        if line.strip():
+            entry.append(line[tab+2:].strip())
+            break
 
     #start dataset
     for line in lines:
-        if not line.strip():
-            continue
-        if line[tab] == '-':
-            parse(entry)
-            entry = []
-        entry.append(line[tab+2:])
-            
-    parse(entry)
+        if line.strip():
+            if line[tab] == '-':
+                yield parse(entry)
+                entry = []
 
-if __name__ == '__main__':
-    test = """
-key: meta_val
-dataset:
-
-   -  key: val1
-      key: val2
-   -  - testy
-      - testttot
-   -  - tamsty
-            """
-            
-    parser(test.split('\n'))
+            entry.append(line[tab+2:].strip())
+    if entry:
+        yield parse(entry)
