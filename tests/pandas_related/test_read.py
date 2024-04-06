@@ -4,7 +4,7 @@ import sys
 #pandas_frontend = importlib.util.module_from_spec(spec)
 #sys.modules["pandas_frontend"] = pandas_frontend
 #spec.loader.exec_module(pandas_frontend)
-from ...yamld import with_pandas
+from ...yamld import with_iofile
 
 import pandas as pd
 from unittest.mock import patch, mock_open
@@ -47,7 +47,7 @@ def test_read_onelist_dataframe():
 
     with patch("builtins.open", mock_open(read_data=yaml_content)) as mock_file:
         # Test case 1: Check if the function returns a DataFrame
-        df = with_pandas.from_yamld('./mocked_path')
+        df = with_iofile.read_dataframe('./mocked_path')
         assert isinstance(df, pd.DataFrame)
 
         # Test case 2: Check if the DataFrame has the correct number of rows

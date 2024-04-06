@@ -51,11 +51,14 @@ def _dump(entry, is_min, i):
             front = '  - ' #4 spaces
     return lines
 
-def write_meta(iof, meta):
+def write_meta(iof, meta, **kwargs):
     if meta:
-        yaml.safe_dump(meta, iof, default_flow_style=False)
+        yaml.safe_dump(meta, iof, default_flow_style=False, **kwargs)
         #iof.write('\n---\n')
-        iof.write('\ndataset:\n')
+        #iof.write('\ndataset:\n')
+
+def write_dataset_heading(iof):
+    iof.write('\ndataset:\n')
     
 def write(path, dataset=None, features=None, meta= None, is_min=True):
     assert all(map(lambda x: isinstance(x, str), features))

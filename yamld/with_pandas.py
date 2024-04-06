@@ -3,7 +3,7 @@ if __name__ == "__main__":
     from writer import _dump_list, write_meta
 else:
     from .parser import parse_dataset, parse_meta, _get_feature_names_and_indent
-    from .writer import _dump_list, write_meta
+    from .writer import _dump_list, write_meta, write_dataset_heading
 import pandas as pd
 
 def _parse2dataframe(lines):
@@ -16,12 +16,12 @@ def _parse2dataframe(lines):
     df.attrs = meta if meta else {}
     return df
 
-def from_yamld(path):
-    with open(path, 'r') as f:
-        return _parse2dataframe(f)
+def from_yamld(iofile):
+    return _parse2dataframe(iofile)
     
 def to_yamld(iofile, df, is_min=True, add_column_names=True):
     write_meta(iofile, df.attrs)
+    write_dataset_heading(iofile)
 
     df = df.reset_index(drop=True)
     features = df.columns.tolist() if add_column_names else None
