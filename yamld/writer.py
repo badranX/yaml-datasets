@@ -18,17 +18,24 @@ def _caster(entry):
 
 def _dump_list(entry, features, is_min, i):
     entry = _caster(entry)
-    is_min = is_min and i
     lines = []
-    front =  '- - ' if is_min else  '- '
-    for feature, val in zip(features, entry):
-        if is_min:
+    if features:
+        is_min = is_min and i
+        front =  '- - ' if is_min else  '- '
+        for feature, val in zip(features, entry):
+            if is_min:
+                lines.append(front +  val)
+                front = '  - ' #4 spaces
+            else:
+                lines.append(front + str(feature) + ': ' + val)
+                front = '  '  #2 spaces
+        return lines
+    else:
+        front =  '- - ' 
+        for val in entry:
             lines.append(front +  val)
             front = '  - ' #4 spaces
-        else:
-            lines.append(front + str(feature) + ': ' + val)
-            front = '  '  #2 spaces
-    return lines
+        return lines
 
 def _dump(entry, is_min, i):
     entry = _caster(entry)
@@ -44,12 +51,11 @@ def _dump(entry, is_min, i):
             front = '  - ' #4 spaces
     return lines
 
-def write_meta(path, meta):
-    with open(path, 'w') as f:
-        if meta:
-            yaml.safe_dump(meta, f, default_flow_style=False)
-            f.write('\n---\n')
-            f.write('\ndataset:\n')
+def write_meta(iof, meta):
+    if meta:
+        yaml.safe_dump(meta, iof, default_flow_style=False)
+        #iof.write('\n---\n')
+        iof.write('\ndataset:\n')
     
 def write(path, dataset=None, features=None, meta= None, is_min=True):
     assert all(map(lambda x: isinstance(x, str), features))

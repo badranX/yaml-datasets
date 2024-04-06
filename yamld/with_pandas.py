@@ -1,5 +1,9 @@
-from .parser import parse_dataset, parse_meta, _get_feature_names_and_indent
-from .writer import _dump_list, write_meta
+if __name__ == "__main__":
+    from parser import parse_dataset, parse_meta, _get_feature_names_and_indent
+    from writer import _dump_list, write_meta
+else:
+    from .parser import parse_dataset, parse_meta, _get_feature_names_and_indent
+    from .writer import _dump_list, write_meta
 import pandas as pd
 
 def _parse2dataframe(lines):
@@ -16,13 +20,13 @@ def from_yamld(path):
     with open(path, 'r') as f:
         return _parse2dataframe(f)
     
-def to_yamld(df, path, is_min=True):
-    write_meta(path, df.attrs)
+def to_yamld(iofile, df, is_min=True, add_column_names=True):
+    write_meta(iofile, df.attrs)
 
     df = df.reset_index(drop=True)
-    features = df.columns.tolist()
+    features = df.columns.tolist() if add_column_names else None
     df.apply(lambda x: _dump_list(x.tolist(), features, is_min, x.name), axis=1).\
-        explode().to_csv(path, mode='a', index=False, header=False)
+        explode().to_csv(iofile, mode='a', index=False, header=False)
  
 
 if __name__ == "__main__":
@@ -30,10 +34,13 @@ if __name__ == "__main__":
 data: "sdlkfs"
 
 dataset:
+- test: "wow"
+  testy: "testy"
 - - "what"
   - "whater"
 - - "fuck"
   - "fucker"
 """
     df = _parse2dataframe(l.split('\n'))
+    print(df)
     to_yamld(df,'test.yaml')

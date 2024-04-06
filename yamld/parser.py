@@ -36,13 +36,16 @@ def parse_meta(lines):
         if not line.strip():
             continue
         if first and line.lstrip().startswith('-'):
-            lines = chain(tmp, lines)
-            return None, lines
+            tmp.append(line)
+            break
         first = False
         if line.startswith('dataset'):
+            tmp.append(line)
             break
         metadata += line + '\n'
-    metadata = yaml.safe_load(metadata) 
+    
+    metadata = yaml.safe_load(metadata) if metadata else None 
+    lines = chain(tmp, lines)
     return metadata, lines
 
 

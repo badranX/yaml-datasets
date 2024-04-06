@@ -39,7 +39,6 @@ dataset:
 def test_read_onelist_dataframe():
     l = []
     for entry in parser.parse_dataset(yaml_content.split('\n')):
-        print(entry)
         l.append(entry)
 
     #l =  list(parser.parse_dataset(yaml_content.split('\n')))

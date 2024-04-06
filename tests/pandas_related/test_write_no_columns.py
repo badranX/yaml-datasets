@@ -1,14 +1,44 @@
-import importlib.util
-import sys
+import yaml
 #spec = importlib.util.spec_from_file_location("pandas_frontend", "./yamld/pandas_frontend.py")
 #pandas_frontend = importlib.util.module_from_spec(spec)
 #sys.modules["pandas_frontend"] = pandas_frontend
 #spec.loader.exec_module(pandas_frontend)
-from ..yamld import pandas_frontend
+from ...yamld import with_pandas
 
 import io
 import os
 import pandas as pd
+
+
+expected_yaml = """
+oneval0: 2
+config1:
+  key1: 'value1'
+  key2: 'value2'
+
+oneval1: 'test'
+
+config2:
+  keyA: 'valueA'
+  keyB: 'valueB'
+
+oneval2: 3.4
+
+
+dataset:
+  - - 'Sami Aker'
+    - 30
+    - 'New York'
+  - - 'Jane Smith'
+    - 25
+    - 'San Francisco'
+  - - 'Bob Johnson'
+    - 35
+    - 'Chicago'
+  - - 'Test'
+    - 35
+    - 'Chicago'
+"""
 
 # Sample DataFrame
 data = {
@@ -28,45 +58,17 @@ df.attrs['oneval2'] = 3.4
 
 def normalize_yaml(text):
     return os.linesep.join([s.rstrip() for s in text.splitlines() if s])
+x =  "wow"
 
-def test_dataframe_to_yaml():
+def test_write_no_columns():
     outio = io.StringIO()
     # Convert DataFrame to YAML
-    pandas_frontend.to_yamld(outio, df)
+    with_pandas.to_yamld(outio, df, is_min=True, add_column_names=False)
 
 
-    # Test case 1: Check if the generated YAML has the correct structure
-    expected_yaml = """
-
-oneval0: 2
-config1:
-  key1: 'value1'
-  key2: 'value2'
-
-oneval1: 'test'
-
-config2:
-  keyA: 'valueA'
-  keyB: 'valueB'
-
-oneval2: 3.4
-
-data:
-  - name: 'Sami Aker'
-    age: 30
-    city: 'New York'
-  - name: 'Jane Smith'
-    age: 25
-    city: 'San Francisco'
-  - name: 'Bob Johnson'
-    age: 35
-    city: 'Chicago'
-  - name: 'Test'
-    age: 35
-    city: 'Chicago'
-"""
-    outio.seek(0)
-    assert normalize_yaml(outio.read()) == normalize_yaml(expected_yaml)
     
-if __name__ == "__main__":
-  test_dataframe_to_yaml()
+    outio.seek(0)
+    output = yaml.safe_load(outio)
+    expected = yaml.safe_load(expected_yaml)
+
+    assert output == expected
