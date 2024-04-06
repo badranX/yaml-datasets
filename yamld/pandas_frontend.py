@@ -1,5 +1,5 @@
-from parser import parse_dataset, parse_meta, _get_feature_names_and_indent
-from writer import _dump_list, write_meta
+from .parser import parse_dataset, parse_meta, _get_feature_names_and_indent
+from .writer import _dump_list, write_meta
 import pandas as pd
 
 def _parse2dataframe(lines):
