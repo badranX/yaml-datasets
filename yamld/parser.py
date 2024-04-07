@@ -7,13 +7,16 @@ import yaml
 none_pattern = re.compile(r"\bnull\b")
 
 def _eval(val):
-    return ast.literal_eval(none_pattern.sub("None", val))
+    val = val.strip()
+    if val == "null":
+        return None
+    else:
+        return ast.literal_eval(val)
 
 def parse(entry):
     islist = entry[0].strip()[0] == '-'
     entry = [_eval(line[2 if islist else line.find(':') + 1:].strip())
              for line in entry]
-    print(entry)
     return entry
 
     
