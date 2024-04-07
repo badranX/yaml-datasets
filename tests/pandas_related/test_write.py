@@ -1,10 +1,9 @@
 from unittest.mock import patch, mock_open
+from pathlib import Path
 import yaml
-#spec = importlib.util.spec_from_file_location("pandas_frontend", "./yamld/pandas_frontend.py")
-#pandas_frontend = importlib.util.module_from_spec(spec)
-#sys.modules["pandas_frontend"] = pandas_frontend
-#spec.loader.exec_module(pandas_frontend)
-from ...yamld import with_pandas
+from pyfakefs.fake_filesystem_unittest import TestCase
+
+from ...yamld import  with_iofile
 
 import io
 import os
@@ -60,20 +59,17 @@ df.attrs['oneval2'] = 3.4
 def normalize_yaml(text):
     return os.linesep.join([s.rstrip() for s in text.splitlines() if s])
 
-def test_write():
-    outio = io.StringIO()
-    # Convert DataFrame to YAML
-    with_pandas.to_yamld(outio, df, is_min=False)
 
+class TestWrite(TestCase):
+    def setUp(self):
+        self.setUpPyfakefs()
 
-    
-    outio.seek(0)
-    output = yaml.safe_load(outio)
-    expected = yaml.safe_load(expected_yaml)
+    def test_write(self):
+        with_iofile.write_dataframe('mock', df, is_min=False)
 
-    assert output == expected
-      
-      # Assert equality after processing
-    
-if __name__ == "__main__":
-  test_dataframe_to_yaml()
+        path = Path('mock')
+
+        output = yaml.safe_load(path.read_text())
+        expected = yaml.safe_load(expected_yaml)
+
+        assert output == expected

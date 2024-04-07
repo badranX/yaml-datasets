@@ -1,9 +1,7 @@
 import yaml
-#spec = importlib.util.spec_from_file_location("pandas_frontend", "./yamld/pandas_frontend.py")
-#pandas_frontend = importlib.util.module_from_spec(spec)
-#sys.modules["pandas_frontend"] = pandas_frontend
-#spec.loader.exec_module(pandas_frontend)
-from ...yamld import with_pandas
+from pyfakefs.fake_filesystem_unittest import TestCase
+from pathlib import Path
+from ...yamld import with_iofile
 
 import io
 import os
@@ -56,19 +54,16 @@ df.attrs['config2'] = {'keyA': 'valueA',
                        'keyB': 'valueB'}
 df.attrs['oneval2'] = 3.4
 
-def normalize_yaml(text):
-    return os.linesep.join([s.rstrip() for s in text.splitlines() if s])
-x =  "wow"
+class TestWrite(TestCase):
+    def setUp(self):
+        self.setUpPyfakefs()
 
-def test_write_no_columns():
-    outio = io.StringIO()
-    # Convert DataFrame to YAML
-    with_pandas.to_yamld(outio, df, is_min=True, add_column_names=False)
+    def test_write_no_columns(self):
+        with_iofile.write_dataframe('mock', df, is_min=True, add_column_names=False)
 
+        path = Path('mock')
 
-    
-    outio.seek(0)
-    output = yaml.safe_load(outio)
-    expected = yaml.safe_load(expected_yaml)
+        output = yaml.safe_load(path.read_text())
+        expected = yaml.safe_load(expected_yaml)
 
-    assert output == expected
+        assert output == expected
