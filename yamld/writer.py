@@ -1,3 +1,4 @@
+from .common import DATASET_HEADINGS
 import yaml
 
 BUFFER_SIZE = 1024
@@ -68,7 +69,8 @@ def write(path, dataset=None, features=None, meta= None, is_min=True):
         if meta:
             yaml.safe_dump(meta, f, default_flow_style=False)
             f.write('\n---\n')
-            f.write('\ndataset:\n')
+            dataset_heading = DATASET_HEADINGS[0]
+            f.write('\n' + dataset_heading + ':\n')
     
     if dataset:
         batch = ""
