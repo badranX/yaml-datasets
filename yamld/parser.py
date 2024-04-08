@@ -85,7 +85,7 @@ def _get_feature_names_and_indent(lines):
                 break
             entry.append(line[indent_idx+2:])
     lines = chain(tmp, lines)
-    return feature_names, indent_idx, lines
+    return feature_names, len(entry), indent_idx, lines
 
 def _skip_to_dataset(lines):
     #skip meta data if any
@@ -107,7 +107,7 @@ def _skip_to_dataset(lines):
         
 def parse_dataset(lines):
     lines = _skip_to_dataset(lines)
-    _, tab, lines = _get_feature_names_and_indent(lines)
+    _, _, tab, lines = _get_feature_names_and_indent(lines)
 
     lines = iter(lines)
     entry = []

@@ -10,7 +10,7 @@ import pandas as pd
 
 def _parse2dataframe(lines):
     meta, lines = parse_meta(lines) 
-    features, _, lines = _get_feature_names_and_indent(lines)
+    features, _, _, lines = _get_feature_names_and_indent(lines)
     if features:
         df = pd.DataFrame(parse_dataset(lines), columns=features)
     else:

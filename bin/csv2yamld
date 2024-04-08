@@ -70,9 +70,9 @@ def main():
                          usecols=args.columns, comment=args.comment, encoding=args.encoding)
         df2yaml(df, args.file_path, args.output_file, args.mini, args.stdout)
     except FileNotFoundError as e:
-        raise type(e)(f"File not found at {args.file_path}")
+        raise type(e)(f"File not found: {args.file_path}")
     except pd.errors.EmptyDataError as e:
-        raise type(e)(f"The CSV file at {args.file_path} is empty")
+        raise type(e)(f"The input CSV file is empty: {args.file_path}")
 
 
 # Run the main function

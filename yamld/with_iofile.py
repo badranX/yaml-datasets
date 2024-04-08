@@ -39,13 +39,16 @@ def read_metadata(path, **kwargs):
     return meta
 
 @decorator_open_write
-def write_metadata(path, **kwargs):
-    write_meta(path)
+def write_metadata(path, meta, **kwargs):
+    write_meta(path, meta)
     
-@decorator_open_read
 def read_generator(path, **kwargs):
     def gen():
-        return parse_dataset(path)
+        with open(path, 'r') as f:
+            features, features_len, _, lines = _get_feature_names_and_indent(f)
+            features = features if features else list(range(features_len))
+            for x in parse_dataset(lines):
+                yield {f:v for f, v in zip(features, x)}
     return gen
 
 @decorator_open_write
