@@ -23,7 +23,4 @@ class MyTest(TestCase):
         self.fs.create_file('mock.yaml', contents='')
         with_iofile.write_dataframe('mock.yaml', dfcsv, is_min=False)
         path = Path('mock.yaml')
-        print(path.read_text().strip())
         self.assertEqual(path.read_text().strip(), yaml_content)
-
-        print(open('mock.yaml', 'r').read())

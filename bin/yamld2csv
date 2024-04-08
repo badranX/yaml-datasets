@@ -45,9 +45,9 @@ def main():
     try:
         yaml2csv(args.file_path, args.output, args.encoding)
     except FileNotFoundError as e:
-        raise type(e)(f"File not found at {args.file_path}")
+        raise type(e)(f"File not found: {args.file_path}")
     except pd.errors.EmptyDataError as e:
-        raise type(e)(f"The CSV file at {args.file_path} is empty")
+        raise type(e)(f"The YAML file is empty: {args.file_path}")
 
 
 # Run the main function

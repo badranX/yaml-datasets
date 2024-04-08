@@ -1,8 +1,9 @@
 from itertools import chain
+import warnings
 import re
 import ast
 import yaml
-from .common import DATASET_HEADINGS
+from .common import _is_dataset_heading
 
 #TODO literal_eval and replace none
 none_pattern = re.compile(r"\bnull\b")
@@ -28,9 +29,6 @@ def parse_feature_names_if_exist(entry):
     keys = [line[:line.find(':')].strip() 
              for line in entry]
     return keys
-
-def _is_dataset_heading(line):
-    return any([line.startswith(x) for x in DATASET_HEADINGS])
 
 def parse_meta(lines):
     lines = iter(lines)
@@ -100,8 +98,9 @@ def _skip_to_dataset(lines):
                 tmp.append(line)
                 break
             is_first = False
-            if strp_line.startswith('dataset'):
+            if _is_dataset_heading(line):
                 break
+
     lines = chain(tmp, lines)
     return lines
     #DONE meta
