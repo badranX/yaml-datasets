@@ -13,6 +13,7 @@ else:
 def _is_path(path):
     if isinstance(path, str) or isinstance(path, Path):
         return True
+    return False
 
 def decorator_open_read(func):
     def with_open(path, *args, **kwargs):
