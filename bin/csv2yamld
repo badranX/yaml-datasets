@@ -12,7 +12,7 @@ def df2yaml(df, inpath, outpath, is_min, stdout=False):
     inpath = Path(inpath)
     suffix = inpath.suffix
     if stdout:
-        write_dataframe(sys.stdout, df, name='data', is_min=is_min)
+        write_dataframe(sys.stdout, df, is_min=is_min)
     else:
         if outpath:
             outpath = Path(outpath)
