@@ -64,7 +64,7 @@ print(dataframe.attrs)
 yamld.write_dataframe('new_yamld_file.yaml', dataframe)
 
 #Read yamld as a generator of `dict` values
-dataset_gen = read_generator('your_yamld_file.yaml')
+dataset_gen = yamld.read_generator('your_yamld_file.yaml')
 ```
 
 **Note:** this API is subject to change.
