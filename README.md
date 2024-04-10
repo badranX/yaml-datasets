@@ -4,8 +4,8 @@ YAML datasets (**YAMLd**) is a tiny subset of *YAML* designed specifically for r
 
 ### YAMLd Rules:
 
-- The file ends with a top-level key *data* or *dataset* that contain the list of entries in the dataset
-- Everything before is considered meta-data
+- The file ends with a top-level key `data` or `dataset` that contain the list of entries in the dataset.
+- Everything before is considered meta-data.
     
 ### Example
 
@@ -48,6 +48,27 @@ You can also remove feature names completly.
 
 **Note:** It is still experimental, use it with caution.
 
+
+## Scripting
+A simple example:
+```python
+import yamld
+
+#Read dataframe
+dataframe = yamld.read_dataframe('your_yamld_file.yaml')
+
+#Print meta-data
+print(dataframe.attrs)
+
+#Write dataframe to a file
+yamld.write_dataframe('new_yamld_file.yaml', dataframe)
+
+#Read yamld as a generator of `dict` values
+dataset_gen = read_generator('your_yamld_file.yaml')
+```
+
+**Note:** this API is subject to change.
+
 ## Convert CSV to YAMLd and vice versa:
 ```console
 csv2yamld <your-csv-file>
@@ -85,3 +106,21 @@ The main goal is to edit and view your data files with nothing but your text edi
     - List: surrounded with `[]`
     - String: surrounded with `""` or `''` 
     - Number
+
+    
+### As for now the followings are allowed:
+    
+- No meta, only dataset. Example:
+
+``` yaml
+- - 30
+  - 'New York'
+- - 'Jane Smith'
+  - 25
+  - 'San Francisco'
+```
+
+- Meta only (simply remove the top-level `dataset` or `data` key). Example:
+``` yaml
+META_VAL: "SOME_VALUE"
+```
