@@ -4,8 +4,8 @@ YAML datasets (**YAMLd**) is a tiny subset of *YAML* designed specifically for r
 
 ### YAMLd Rules:
 
-- The file ends with a top-level key `data` or `dataset` that contain the list of entries in the dataset.
-- Everything before is considered meta-data.
+- The file ends with a top-level key `data` or `dataset` that contains the list of entries in the dataset.
+- Everything before is considered meta-data. If you are using **pandas**, it will be loaded in the `attrs` property of the dataframe.
     
 ### Example
 
@@ -46,7 +46,7 @@ data:
 
 You can also remove feature names completly.
 
-**Note:** It is still experimental, use it with caution.
+> **_Note:_** This library is still experimental, use it with caution.
 
 
 ## Scripting
@@ -115,12 +115,11 @@ The main goal is to edit and view your data files with nothing but your text edi
 ``` yaml
 - - 30
   - 'New York'
-- - 'Jane Smith'
-  - 25
+- - 25
   - 'San Francisco'
 ```
 
 - Meta only (simply remove the top-level `dataset` or `data` key). Example:
 ``` yaml
-META_VAL: "SOME_VALUE"
+meta_info: "some_value"
 ```
