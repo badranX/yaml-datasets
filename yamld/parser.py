@@ -5,9 +5,6 @@ import ast
 import yaml
 from .common import _is_dataset_heading
 
-#TODO literal_eval and replace none
-none_pattern = re.compile(r"\bnull\b")
-
 def _eval(val):
     val = val.strip()
     if val == "null":
@@ -15,14 +12,13 @@ def _eval(val):
     else:
         return ast.literal_eval(val)
 
-def parse(entry):
+def _parse(entry):
     islist = entry[0].strip()[0] == '-'
     entry = [_eval(line[2 if islist else line.find(':') + 1:].strip())
              for line in entry]
     return entry
 
-    
-def parse_feature_names_if_exist(entry):
+def _parse_feature_names_if_exist(entry):
     islist = entry[0].strip()[0] == '-'
     if islist:
         return None
@@ -52,7 +48,6 @@ def parse_meta(lines):
     lines = chain(tmp, lines)
     return metadata, lines
 
-
 def _process_dataset_line(line, tab=0, front = None):
     line =  line[tab + 2:].strip()  #remove first '- '
     if line[:2] == '- ': #check second '- ' 
@@ -61,8 +56,7 @@ def _process_dataset_line(line, tab=0, front = None):
         split = line.split(':', 1)
         return split[0], split[1], True
     
-
-def _get_feature_names_and_indent(lines):
+def get_feature_names_and_indent(lines):
     lines = iter(lines)
     lines = _skip_to_dataset(lines)
     tmp = []
@@ -73,16 +67,15 @@ def _get_feature_names_and_indent(lines):
         if line.strip():
             tmp.append(line)
             if indent_idx == None:
+                assert line.lstrip().startswith('-')
                 indent_idx = line.find('-')
                 assert indent_idx != None
             elif line[indent_idx] == '-':
-                feature_names = parse_feature_names_if_exist(entry)
+                feature_names = _parse_feature_names_if_exist(entry)
                 entry = []
                 break
-            if not entry and line[indent_idx+1:].lstrip().startswith('-'):
-                #first char
-                feature_names = None
-                break
+            elif not line[indent_idx].isspace():
+                raise Exception("Indentation error in the first entry of the dataset/data list")
             entry.append(line[indent_idx+2:])
     lines = chain(tmp, lines)
     return feature_names, len(entry), indent_idx, lines
@@ -103,11 +96,10 @@ def _skip_to_dataset(lines):
 
     lines = chain(tmp, lines)
     return lines
-    #DONE meta
         
 def parse_dataset(lines):
     lines = _skip_to_dataset(lines)
-    _, _, tab, lines = _get_feature_names_and_indent(lines)
+    _, _, tab, lines = get_feature_names_and_indent(lines)
 
     lines = iter(lines)
     entry = []
@@ -121,9 +113,9 @@ def parse_dataset(lines):
     for line in lines:
         if line.strip():
             if line[tab] == '-':
-                yield parse(entry)
+                yield _parse(entry)
                 entry = []
 
             entry.append(line[tab+2:].strip())
     if entry:
-        yield parse(entry)
+        yield _parse(entry)

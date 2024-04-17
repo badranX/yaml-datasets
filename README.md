@@ -110,7 +110,7 @@ The main goal is to edit and view your data files with nothing but your text edi
     
 ### As for now the followings are allowed:
     
-- No meta, only dataset. Example:
+- No meta, only dataset: This can be done by providing only a list using the dash charachter.  Example:
 
 ``` yaml
 - - 30
@@ -119,7 +119,8 @@ The main goal is to edit and view your data files with nothing but your text edi
   - 'San Francisco'
 ```
 
-- Meta only (simply remove the top-level `dataset` or `data` key). Example:
+- Meta data only: A YAML file with no top-level `dataset` or `data` key and it is not only a list of dash charachters is read exactly as any YAML file.
 ``` yaml
-meta_info: "some_value"
+meta_val: "some_value"
+another_meta_val: "another_value"
 ```
