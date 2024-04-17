@@ -82,10 +82,3 @@ def write(path, dataset=None, features=None, meta= None, is_min=True):
                     f.write(batch)
                     batch = ""
             f.write(batch)
-            
-
-if __name__ == '__main__':
-    meta = {"whatever" : [1,None,3], "wow": "test"}
-    data = [[1,None,3]]*2
-    features = ['test1', 'test2', 'test3']
-    write('./out.yaml', data, features, meta=meta)
